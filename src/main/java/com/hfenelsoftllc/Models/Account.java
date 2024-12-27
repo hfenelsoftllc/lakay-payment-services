@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 public class Account {
     private String accountNumber;
     private String accountName;
+    private BigDecimal accountBalance;
     private AccountType accountType = AccountType.DEPOSIT;
     private Routine routine = Routine.ELECTRONIC;
-    private BigDecimal accountBalance;
     private AccountStatus accountStatus = AccountStatus.OPEN;    
 
     public Account() {
