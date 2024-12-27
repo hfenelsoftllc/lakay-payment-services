@@ -8,6 +8,7 @@ public class Account {
     private BigDecimal accountBalance;
     private AccountType accountType = AccountType.DEPOSIT;
     private Routine routine = Routine.ELECTRONIC;
+    //lprivate int routineNumber =int.TryParse(random(1, 100000));
     private AccountStatus accountStatus = AccountStatus.OPEN;    
 
     public Account() {

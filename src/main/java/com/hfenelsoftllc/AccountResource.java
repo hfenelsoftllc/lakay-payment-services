@@ -8,10 +8,16 @@ import java.util.Set;
 import com.hfenelsoftllc.Models.Account;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 @Path("/accounts")
 public class AccountResource {
@@ -26,6 +32,42 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Account> allAccounts(){
         return accounts;
+    }
+
+    @GET
+    @Path("/{accountNumber}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Account getAccount(@PathParam("accountNumber") String accountNumber){
+        return accounts.stream().filter(
+                account -> account.getAccountNumber()
+                            .equals(accountNumber))
+                            .findFirst()
+                            .orElseThrow(() ->
+                                new WebApplicationException("Account with id of " + accountNumber + " does not exist.", 404)           
+                            );
+    }
+
+    @Provider
+    public static class ErrorMapper implements jakarta.ws.rs.ext.ExceptionMapper<Throwable> {
+        @Override
+        public Response toResponse(Throwable exception) {
+            int code = 500;
+            if (exception instanceof WebApplicationException) {
+                code = ((WebApplicationException) exception).getResponse().getStatus();
+            }
+            
+            JsonObjectBuilder entityBuilder = Json.createObjectBuilder()
+                    .add("exceptionType", exception.getClass().getName())
+                    .add("status", code);
+
+            if(exception.getMessage() != null){
+                entityBuilder.add("error", exception.getMessage());
+            }
+            return Response.status(code)
+                            .entity(entityBuilder.build())
+                            .type(MediaType.APPLICATION_JSON)
+                            .build();
+        }
     }
 
     Set<Account> accounts =  new HashSet<>();
