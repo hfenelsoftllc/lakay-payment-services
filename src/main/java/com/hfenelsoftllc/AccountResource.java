@@ -10,7 +10,9 @@ import com.hfenelsoftllc.Models.Account;
 import jakarta.annotation.PostConstruct;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -68,6 +70,22 @@ public class AccountResource {
                             .type(MediaType.APPLICATION_JSON)
                             .build();
         }
+    }
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createAccount(Account account){
+        if(accounts.contains(account)){
+            return Response.status(409).entity(account).build();
+        }
+        else if(account.getAccountNumber() == null){
+            throw new WebApplicationException("Account number is required", 400);
+            //return Response.status(400).entity(account).build();
+        }
+        accounts.add(account);
+        return Response.status(201).entity(account).build();
     }
 
     Set<Account> accounts =  new HashSet<>();
