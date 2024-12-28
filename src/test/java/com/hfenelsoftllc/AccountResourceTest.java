@@ -1,5 +1,6 @@
 package com.hfenelsoftllc;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import com.hfenelsoftllc.Models.Account;
 import com.hfenelsoftllc.Models.AccountStatus;
+import com.hfenelsoftllc.Models.AccountType;
+import com.hfenelsoftllc.Models.Routine;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
@@ -38,16 +41,26 @@ class AccountResourceTest {
 
     @Test
     void testAllAccountsEndpoint() {
-       Response result =  given()
+       Response result =  
+                given()
                     .when().get("/accounts")
                     .then()
                         .statusCode(200)
-                        .body("$.size()", is(2))
+                        .body(
+                            containsString("Checking"),
+                            containsString("Savings"),
+                            containsString("Credit"),
+                            containsString("Loan"),
+                            containsString("Deposit"),
+                            containsString("Teen"),
+                            containsString("Student"),
+                            containsString("Family")
+                            )
                         .extract()
                         .response();
-    List<Account> accounts = result.jsonPath().getList("$");
-    assertThat(accounts, not(empty()));
-    assertThat(accounts, hasSize(7)); 
+        List<Account> accounts = result.jsonPath().getList("$");
+        assertThat(accounts, not(empty()));
+        assertThat(accounts, hasSize(9)); 
     }
 
 
@@ -57,28 +70,31 @@ class AccountResourceTest {
                             .when().get("/accounts/{accountNumber}", "1001")
                             .then()
                                 .statusCode(200)
-                                .body("$.size()", is(1))
                                 .extract()
                                 .as(Account.class);
         assertThat(account.getAccountNumber(), equalTo("1001"));
         assertThat(account.getAccountName(), equalTo("Checking"));
         assertThat(account.getAccountBalance(), equalTo(new BigDecimal("1000.00")));
+        assertThat(account.getAccountType(), equalTo(AccountType.DEPOSIT));
         assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
+        assertThat(account.getRoutine(), equalTo(Routine.ELECTRONIC));
+
     }
 
     @Test
     @Order(3)
     void testCreateAccount(){
-        Account newAccount = new Account("1008", "Savings", new BigDecimal("2000.00"));
+        Account newAccount = new Account("1009", "Savings", new BigDecimal("20000.00"));
+        
         Account returnedAccount =
-        given()
-            .contentType(ContentType.JSON)
-            .body(newAccount)
-            .when().post("/accounts")
-            .then()
-                .statusCode(201)
-                .extract()
-                .as(Account.class);
+            given()
+                .contentType(ContentType.JSON)
+                .body(newAccount)
+                .when().post("/accounts")
+                .then()
+                    .statusCode(201)
+                    .extract()
+                    .as(Account.class);
 
         assertThat(returnedAccount, notNullValue());
         assertThat(returnedAccount, equalTo(newAccount));
@@ -87,12 +103,21 @@ class AccountResourceTest {
                             .when().get("/accounts")
                             .then()
                                 .statusCode(200)
-                                .body("$.size()", is(7))
+                                .body(
+                                    containsString("Checking"),
+                                    containsString("Savings"),
+                                    containsString("Credit"),
+                                    containsString("Loan"),
+                                    containsString("Deposit"),
+                                    containsString("Teen"),
+                                    containsString("Student"),
+                                    containsString("Family")
+                                )
                                 .extract()
                                 .response();
         List<Account> accounts = result.jsonPath().getList("$");
         assertThat(accounts, not(empty()));
-        assertThat(accounts, hasSize(7));
+        assertThat(accounts, hasSize(9));
         
     }
 

@@ -6,10 +6,14 @@ public class Account {
     private String accountNumber;
     private String accountName;
     private BigDecimal accountBalance;
-    private AccountType accountType = AccountType.DEPOSIT;
-    private Routine routine = Routine.ELECTRONIC;
-    //lprivate int routineNumber =int.TryParse(random(1, 100000));
-    private AccountStatus accountStatus = AccountStatus.OPEN;    
+    private AccountType accountType;
+    private AccountStatus accountStatus;
+    private Routine routine;
+
+    //private AccountType accountType = AccountType.DEPOSIT;
+    //private Routine routine = Routine.ELECTRONIC;
+    //private int routineNumber =int.TryParse(random(1, 100000));
+    //private AccountStatus accountStatus = AccountStatus.OPEN;    
 
     public Account() {
     }
@@ -18,6 +22,18 @@ public class Account {
         this.accountNumber = accountNumber;
         this.accountName = accountName;        
         this.accountBalance = accountBalance;
+        this.accountType = AccountType.DEPOSIT;
+        this.accountStatus = AccountStatus.OPEN;
+        this.routine = Routine.ELECTRONIC;
+    }
+
+    public Account(String accountNumber, String accountName, BigDecimal accountBalance,AccountType accountType, AccountStatus accountStatus,Routine routine) {
+        this.accountNumber = accountNumber;
+        this.accountName = accountName;        
+        this.accountBalance = accountBalance;
+        this.accountType = accountType.DEPOSIT;
+        this.accountStatus = accountStatus.OPEN;
+        this.routine = routine.ELECTRONIC;
     }
 
     public String getAccountNumber() {

@@ -99,6 +99,7 @@ public class AccountResource {
         accounts.add(new Account("1004", "Loan", new BigDecimal("4000.00")));
         accounts.add(new Account("1005", "Deposit", new BigDecimal("5000.00")));
         accounts.add(new Account("1006", "Student", new BigDecimal("6000.00")));
-        accounts.add(new Account("1007", "Checking", new BigDecimal("7000.00")));
+        accounts.add(new Account("1007", "Teen", new BigDecimal("7000.00")));
+        accounts.add(new Account("1008", "Family", new BigDecimal("17000.00")));
     }
 }
