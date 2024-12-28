@@ -86,6 +86,22 @@ public class Account {
         return accountBalance;
     }
 
+
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public Routine getRoutine() {
+        return routine;
+    }
+
+    public void markRoutineElectronic() {
+        this.routine = Routine.ELECTRONIC;
+    }
+    public void markRoutineWires() {
+        this.routine = Routine.WIRES;
+    }
+
     public void setAccountBalance(BigDecimal accountBalance) {
         this.accountBalance = accountBalance;
     }
@@ -114,6 +130,7 @@ public class Account {
             markOverdrawn();
         }
     }
+
     public void deposit(BigDecimal amount){
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Deposit amount must be greater than zero");
@@ -146,21 +163,17 @@ public class Account {
                 '}';
     }
 
-    public AccountStatus getAccountStatus() {
-        return accountStatus;
+   @Override
+   public boolean equals (Object o) {
+       if (this == o) {
+           return true;
+       }
+       if (o == null || getClass() != o.getClass()) {
+           return false;
+       }
+       Account account = (Account) o;
+       return accountNumber.equals(account.accountNumber);
     }
-
-    public Routine getRoutine() {
-        return routine;
-    }
-
-    public void markRoutineElectronic() {
-        this.routine = Routine.ELECTRONIC;
-    }
-    public void markRoutineWires() {
-        this.routine = Routine.WIRES;
-    }
-
     // private void removeOverdrawnStatus() {
     //     throw new UnsupportedOperationException("Not supported yet.");
     // }
