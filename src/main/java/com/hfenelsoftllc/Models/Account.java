@@ -174,6 +174,11 @@ public class Account {
        Account account = (Account) o;
        return accountNumber.equals(account.accountNumber);
     }
+
+    // @Override
+    // public int hashCode() {
+    //     return Objects.hash(accountNumber);
+    // }
     // private void removeOverdrawnStatus() {
     //     throw new UnsupportedOperationException("Not supported yet.");
     // }

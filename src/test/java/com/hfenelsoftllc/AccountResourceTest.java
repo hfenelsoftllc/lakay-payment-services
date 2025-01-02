@@ -2,7 +2,7 @@ package com.hfenelsoftllc;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+//import static org.hamcrest.CoreMatchers.is;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,7 +43,7 @@ class AccountResourceTest {
     void testAllAccountsEndpoint() {
        Response result =  
                 given()
-                    .when().get("/accounts")
+                    .when().get("/api/v1/accounts")
                     .then()
                         .statusCode(200)
                         .body(
@@ -67,7 +67,7 @@ class AccountResourceTest {
     @Test
     void testGetAccountEndpoint() {
        Account account =  given()
-                            .when().get("/accounts/{accountNumber}", "1001")
+                            .when().get("/api/v1/accounts/{accountNumber}", "1001")
                             .then()
                                 .statusCode(200)
                                 .extract()
@@ -90,7 +90,7 @@ class AccountResourceTest {
             given()
                 .contentType(ContentType.JSON)
                 .body(newAccount)
-                .when().post("/accounts")
+                .when().post("/api/v1/accounts")
                 .then()
                     .statusCode(201)
                     .extract()
@@ -100,7 +100,7 @@ class AccountResourceTest {
         assertThat(returnedAccount, equalTo(newAccount));
 
         Response result = given()
-                            .when().get("/accounts")
+                            .when().get("/api/v1/accounts")
                             .then()
                                 .statusCode(200)
                                 .body(

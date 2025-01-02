@@ -1,7 +1,7 @@
 package com.hfenelsoftllc;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +21,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
-@Path("/accounts")
+@Path("/api/v1/accounts")
 public class AccountResource {
 
     // @GET
@@ -31,6 +31,7 @@ public class AccountResource {
     // }
 
     @GET
+    // @Path("/api/v1/accounts")
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Account> allAccounts(){
         return accounts;
@@ -74,6 +75,7 @@ public class AccountResource {
 
 
     @POST
+    // @Path("/api/v1/accounts")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createAccount(Account account){

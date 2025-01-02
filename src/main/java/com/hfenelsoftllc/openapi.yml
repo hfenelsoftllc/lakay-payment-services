@@ -1,0 +1,549 @@
+openapi: '3.0.3'
+info:
+  title: Lakay Banking Services API
+  version: '1.0'
+  description: |
+    This is the API for Lakay Banking Services. It provides online access to the customers bank accounts.
+    We are going to create an API to manage bank accounts. The API will allow users to create, read, update, and delete bank accounts.
+    The API will also allow users to deposit and withdraw money from their accounts. The API will be secured using OAuth 2.0.
+    The following Operations will be supported:
+    * Create Account
+    * Get Account
+    * Update Account
+    * Delete Account
+    * Deposit Money
+    * Withdraw Money
+    * Transfer Money
+    * Get Account Balance
+
+    We will cover also the following topics:
+    * Result pagination
+    * Security (AuthN and AuthZ)
+
+    We will use the following technologies:
+    * Quarkus Frameworks
+    * RESTEasy
+    * Continuous Integration (CI)
+    * Continuous Deployment (CD)
+    * Hibernate
+    * PostgreSQL
+    * Keycloak
+    * Docker
+    * Kubernetes
+    * Git
+    * GitHub
+    * Jenkins
+    * SonarQube
+    * Nexus
+    * JUnit
+    * Mockito
+    * OpenApi
+    * Swagger
+    * OAuth 2.0
+    * JWT
+    * JPA
+
+security:
+  - OAuthClientCredentials:
+      - Accounts
+      - Customers
+
+servers:
+  - url: http://localhost:8087/api/v1/accounts
+    description: Localhost server
+    variables:
+      port:
+        default: '8087'
+        description: The port number of the server
+      basePath:
+        default: /api/v1/accounts
+        description: The base path of the server
+      scheme:
+        default: https
+        description: The protocol of the server
+      url:
+        default: https://localhost:8087/api/v1/accounts
+        description: The URL of the server
+  - url: https://lakaybanking.com/api/v1/accounts
+    description: Production server
+    variables:
+      port:
+        default: '443'
+        description: The port number of the server
+      basePath:
+        default: /api/v1/accounts
+        description: The base path of the server
+      scheme:
+        default: https
+        description: The protocol of the server
+      url:
+        default: https://lakaybanking.com/api/v1/accounts
+        description: The URL of the server
+tags:
+  - name: accounts
+    description: Operations related to bank accounts
+    externalDocs:
+      description: Find out more
+      url: https://www.lakaybanking.com/accounts
+  - name: customers
+    description: Operations related to customers
+    externalDocs:
+      description: Find out more
+      url: https://www.lakaybanking.com/customers
+  - name: transactions
+    description: Operations related to transactions
+    externalDocs:
+      url: https://www.lakaybanking.com/transactions
+
+paths: 
+  /accounts:
+    get:
+      summary: Get all accounts
+      operationId: getAccounts
+      tags:
+        - accounts
+      parameters:
+        - name: offset
+          in: query
+          description: The page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: The page size
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccountArrayResponse'
+        '401':
+          $ref: '#/components/responses/UnAuthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+    post:
+      summary: Create a new account
+      operationId: createAccount
+      tags:
+        - accounts
+      requestBody:
+        $ref: '#/components/requestBodies/AccountRequestBody'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/CustomerErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnAuthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+  /accounts/{accountId}:
+    get:
+      summary: Get an account by ID
+      operationId: getAccount
+      tags:
+        - accounts
+      parameters:
+        - name: accountId
+          in: path
+          description: The ID of the account
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '404':
+          $ref: '#/components/responses/AccountNotFoundResponse'
+        '401':
+          $ref: '#/components/responses/UnAuthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+    put:
+      summary: Update an account by ID
+      operationId: updateAccount
+      tags:
+        - accounts
+      parameters:
+        - name: accountId
+          in: path
+          description: The ID of the account
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/AccountRequestBody'
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/CustomerErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnAuthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/AccountNotFoundResponse'
+    delete:
+      summary: Delete an account by ID
+      operationId: deleteAccount
+      tags:
+        - accounts
+      parameters:
+        - name: accountId
+          in: path
+          description: The ID of the account
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Account deleted
+        '404':
+          $ref: '#/components/responses/AccountNotFoundResponse'
+        '401':
+          $ref: '#/components/responses/UnAuthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+components:
+  securitySchemes:
+    OAuthClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://lakaybanking.com/auth/token
+          scopes:
+            Accounts: Grants full admin access.
+            Customers: Grants read access to customers
+
+  requestBodies:
+    AccountRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Account'
+    DepositRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Deposit'
+    WithdrawalRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Withdrawal'
+    TransferRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Transfer'
+  responses:
+    AccountResponse:
+      description: Account response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Account'
+    CustomerResponse:
+      description: Customer response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Customer'
+    AccountArrayResponse:
+      description: Account array response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Account'
+    TransactionArrayResponse:
+      description: Paginated Transaction array response
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/PaginatedResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Account"                
+            
+    DepositResponse:
+      description: Deposit response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Deposit'
+    WithdrawalResponse:
+      description: Withdrawal response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Withdrawal'
+    TransferResponse:
+      description: Transfer response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Transfer'
+    AccountBalanceResponse:
+      description: Account balance response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountBalance'
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    CustomerErrorResponse:
+      description: Client error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnexpectedErrorResponse:
+      description: Unexpected error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFoundResponse:
+      description: Not found response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnAuthorizedResponse:
+      description: Unauthorized response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ForbiddenResponse:
+      description: Forbidden response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AccountNotFoundResponse:
+      description: Account not found response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    CustomerNotFoundResponse:
+      description: Customer not found response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BalanceNotFoundResponse:
+      description: Balance not found response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AccountBalanceNotFoundResponse:
+      description: Account balance not found response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    PaginatedResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          example: 1
+        offset:
+          type: integer
+          format: int32
+          example: 10
+        size:
+          type: integer
+          format: int32
+          example: 10
+        total:
+          type: integer
+          format: int32
+          example: 1500
+        data:
+          type: array
+          items:
+            type: object
+    
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        accountNumber:
+          type: string
+        accountType:
+          type: string
+          description: The type of account
+          enum:
+            - SAVINGS
+            - CHECKING
+            - MONEY_MARKET
+            - CD
+            - IRA
+            - 401K
+            - 403B
+            - ROTH_IRA
+            - TRADITIONAL_IRA
+          example: SAVINGS
+        accountStatus:
+          type: string
+          description: The status of the account
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - CLOSED
+            - FROZEN
+            - PENDING
+            - OVERDRAFT
+            - SUSPENDED
+            - BLOCKED
+            - OPEN
+          example: ACTIVE
+        accountBalance:
+          type: number
+          format: double
+          example: 100.00
+        dateCreated:
+          type: string
+          description: The date the account was created
+          format: date-time
+          readOnly: true
+          example: 2021-09-01T12:00:00Z
+
+        customer:
+          $ref: '#/components/schemas/Customer'
+      required:
+        - id
+        - accountNumber
+        - accountType
+        - balance
+        - customer
+        - dateCreated
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+    Deposit:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        account:
+          $ref: '#/components/schemas/Account'
+      required:
+        - id
+        - amount
+        - account
+    Withdrawal:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        account:
+          $ref: '#/components/schemas/Account'
+      required:
+        - id
+        - amount
+        - account
+    Transfer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        fromAccount:
+          $ref: '#/components/schemas/Account'
+        toAccount:
+          $ref: '#/components/schemas/Account'
+      required:
+        - id
+        - amount
+        - fromAccount
+        - toAccount
+    AccountBalance:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        balance:
+          type: number
+          format: double
+        account:
+          $ref: '#/components/schemas/Account'
+      required:
+        - id
+        - balance
+        - account
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+  
